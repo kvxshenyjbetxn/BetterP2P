@@ -42,6 +42,12 @@ You can Shift-click better memory card to clean this outline.
 
 ![](img/showcase6.png)
 
+### Show connections
+
+Select a bound P2P tunnel, then click the crosshair button (**Show connections**) below the refresh button. The GUI closes and highlights the selected tunnel and all same-type tunnels on its frequency **while holding the Advanced Memory Card**, with lines from the center of the screen visible through blocks. Inputs are green and outputs are cyan. Search filters do not hide connected endpoints, and tunnels without channels are included.
+
+There is no timer. Putting the card away hides the locator; holding it again restores the lines. Right-click the card in the air or use it on any P2P tunnel to turn the locator off. Clicking a P2P still opens its GUI as usual; use **Show connections** again to enable lines for the new selection. Sneak-right-click also retains its existing clear behavior. Only endpoints in your current dimension can be drawn; chat reports how many endpoints are in other dimensions. Changing dimensions or leaving the world clears the locator. This is a client-side locator using the GUI's latest server-supplied snapshot; it does not change tunnel bindings.
+
 ## TODOs
 
 - [ ] Documentation
