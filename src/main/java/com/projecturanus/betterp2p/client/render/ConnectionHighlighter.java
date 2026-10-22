@@ -76,14 +76,15 @@ public final class ConnectionHighlighter {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         try {
-            GL11.glTranslated(-cameraX, -cameraY, -cameraZ);
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDepthMask(false);
             GL11.glLineWidth(3.0f);
 
-            // Capture after world translation: both unprojected start and target vertices are world coordinates.
+            // Keep the model-view camera-relative: unprojection uses floats, so absolute world
+            // coordinates would lose precision near the camera at large distances from the origin.
+            // Subtract camera coordinates in double precision before submitting target vertices.
             MODEL_VIEW.clear();
             PROJECTION.clear();
             VIEWPORT.clear();
@@ -101,7 +102,7 @@ public final class ConnectionHighlighter {
                     LINE_START);
 
             for (Target target : active.targets) {
-                renderOutline(target);
+                renderOutline(target, cameraX, cameraY, cameraZ);
             }
             if (drawLines) {
                 final Tessellator tessellator = Tessellator.instance;
@@ -110,9 +111,9 @@ public final class ConnectionHighlighter {
                     tessellator.setColorRGBA(target.red, target.green, target.blue, 255);
                     tessellator.addVertex(LINE_START.get(0), LINE_START.get(1), LINE_START.get(2));
                     tessellator.addVertex(
-                            target.x + 0.5 + target.facing.offsetX * 0.45,
-                            target.y + 0.5 + target.facing.offsetY * 0.45,
-                            target.z + 0.5 + target.facing.offsetZ * 0.45);
+                            target.x + 0.5 - cameraX + target.facing.offsetX * 0.45,
+                            target.y + 0.5 - cameraY + target.facing.offsetY * 0.45,
+                            target.z + 0.5 - cameraZ + target.facing.offsetZ * 0.45);
                 }
                 tessellator.draw();
             }
@@ -123,10 +124,10 @@ public final class ConnectionHighlighter {
         return true;
     }
 
-    private static void renderOutline(Target target) {
+    private static void renderOutline(Target target, double cameraX, double cameraY, double cameraZ) {
         GL11.glPushMatrix();
         try {
-            GL11.glTranslated(target.x + 0.5, target.y + 0.5, target.z + 0.5);
+            GL11.glTranslated(target.x + 0.5 - cameraX, target.y + 0.5 - cameraY, target.z + 0.5 - cameraZ);
             // OutlineRenderer's part geometry is on the west face before rotation.
             switch (target.facing) {
                 case DOWN:
